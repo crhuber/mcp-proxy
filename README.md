@@ -102,10 +102,27 @@ mcp-proxy --config config.yaml
 | `--auth-mode` | `MCP_PROXY_AUTH_MODE` | `none` | `none` \| `bearer` — whether the proxy's own `/mcp` endpoint requires a bearer token |
 | `--log-level` | `MCP_PROXY_LOG_LEVEL` | `info` | `debug` \| `info` \| `warn` \| `error` |
 | `--shutdown-grace` | `MCP_PROXY_SHUTDOWN_GRACE` | `15s` | How long to wait for in-flight requests to finish on shutdown |
+| `--disable-localhost-protection` | `MCP_PROXY_DISABLE_LOCALHOST_PROTECTION` | `false` | Disable the MCP SDK's DNS-rebinding Host header check |
 
 When `--auth-mode=bearer`, set `MCP_PROXY_BEARER_TOKEN` in the environment
 (it is intentionally not a flag so it never shows up in `--help` output or
 process argv).
+
+### Deploying behind a reverse proxy or sidecar
+
+The MCP SDK auto-enables DNS-rebinding protection: if the TCP connection it
+accepted came in on a loopback address, it requires the request's `Host`
+header to also look like loopback (`localhost`, `127.0.0.0/8`, `::1`), and
+otherwise rejects it with `403 Forbidden: invalid Host header`. This guards
+local companion services against a browser being tricked into hitting them,
+and doesn't apply to mcp-proxy's deployment model.
+
+If a sidecar connects to mcp-proxy over `127.0.0.1` but forwards the
+original external `Host` header (e.g. `mcp.domain.com`) — the accepted
+connection's local address is loopback regardless of what address mcp-proxy
+itself binds to, so changing `--listen`/`MCP_PROXY_LISTEN_ADDR` alone won't
+fix it. Set `--disable-localhost-protection` (or
+`MCP_PROXY_DISABLE_LOCALHOST_PROTECTION=1`) in that topology.
 
 ## Configuration
 

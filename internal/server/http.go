@@ -16,12 +16,21 @@ import (
 // If bearerVerifier is non-nil, /mcp is wrapped with bearer-token auth;
 // /healthz is never protected, so orchestrators can probe liveness without a
 // token.
-func BuildHandler(mcpServer *mcp.Server, bearerVerifier auth.TokenVerifier) http.Handler {
+//
+// disableLocalhostProtection turns off the SDK's DNS-rebinding Host-header
+// check. That check assumes a loopback-bound server is only ever reached by
+// local clients (e.g. a browser on the same machine), so it rejects requests
+// whose Host header isn't also loopback. It misfires behind a same-host/pod
+// reverse proxy or service-mesh sidecar that dials the proxy over
+// 127.0.0.1 but forwards the original external Host header — mcp-proxy has
+// no browser-based attack surface, so disabling it in that topology is safe.
+func BuildHandler(mcpServer *mcp.Server, bearerVerifier auth.TokenVerifier, disableLocalhostProtection bool) http.Handler {
 	mcpHandler := mcp.NewStreamableHTTPHandler(
 		func(*http.Request) *mcp.Server { return mcpServer },
 		&mcp.StreamableHTTPOptions{
 			Stateless:                    true,
 			PropagateRequestCancellation: true,
+			DisableLocalhostProtection:   disableLocalhostProtection,
 		},
 	)
 

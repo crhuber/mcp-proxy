@@ -62,6 +62,12 @@ func main() {
 				Sources: cli.EnvVars("MCP_PROXY_SHUTDOWN_GRACE"),
 				Usage:   "how long to wait for in-flight requests to finish on shutdown",
 			},
+			&cli.BoolFlag{
+				Name:    "disable-localhost-protection",
+				Value:   false,
+				Sources: cli.EnvVars("MCP_PROXY_DISABLE_LOCALHOST_PROTECTION"),
+				Usage:   "disable the MCP SDK's DNS-rebinding Host header check; needed behind a same-host/pod reverse proxy or sidecar that connects over 127.0.0.1 but forwards a different Host header",
+			},
 		},
 		Action: run,
 	}
@@ -113,7 +119,7 @@ func run(_ context.Context, cmd *cli.Command) error {
 	if authMode == "bearer" {
 		verifier = proxyauth.NewStaticBearerVerifier(bearerToken)
 	}
-	handler := server.LoggingMiddleware(server.BuildHandler(mcpServer, verifier), logger)
+	handler := server.LoggingMiddleware(server.BuildHandler(mcpServer, verifier, cmd.Bool("disable-localhost-protection")), logger)
 
 	httpSrv := &http.Server{
 		Addr:              cmd.String("listen"),

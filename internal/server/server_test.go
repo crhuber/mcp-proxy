@@ -52,7 +52,7 @@ func TestBuildHandlerServesHealthzUnauthenticated(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	handler := BuildHandler(mcpServer, nil)
+	handler := BuildHandler(mcpServer, nil, false)
 	if handler == nil {
 		t.Fatalf("expected a non-nil handler")
 	}

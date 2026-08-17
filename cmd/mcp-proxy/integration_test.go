@@ -41,7 +41,7 @@ func buildProxy(t *testing.T, cfg *config.Config, bearerToken string) (*httptest
 	if bearerToken != "" {
 		verifier = proxyauth.NewStaticBearerVerifier(bearerToken)
 	}
-	handler := server.BuildHandler(mcpServer, verifier)
+	handler := server.BuildHandler(mcpServer, verifier, false)
 	srv := httptest.NewServer(handler)
 	return srv, srv.URL + "/mcp"
 }
