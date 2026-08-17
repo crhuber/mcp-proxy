@@ -81,6 +81,12 @@ Or build from source:
 go build -o mcp-proxy ./cmd/mcp-proxy
 ```
 
+Or Use [kelp](https://github.com/crhuber/kelp)
+
+```bash
+kelp add crhuber/mcp-proxy --install
+```
+
 ## Usage
 
 ```bash
