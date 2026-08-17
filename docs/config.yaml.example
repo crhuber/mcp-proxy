@@ -1,0 +1,98 @@
+endpoints:
+  - name: billing                       # tool-name prefix -> "billing_*"
+    upstream:
+      base_url: "${BILLING_API_BASE_URL}" # ${ENV_VAR} interpolation, or a literal URL
+      timeout: 10s                        # optional; Go duration syntax
+      auth:
+        type: bearer                      # bearer | header | query | none
+        env: BILLING_API_TOKEN            # secret ALWAYS comes from this env var, never literal in file
+    tools:
+      - name: getInvoice
+        description: "Fetch a single invoice by ID, optionally including line items."
+        parameters:
+          type: object
+          required: [invoiceId]
+          properties:
+            invoiceId:
+              type: string
+              in: path                              # routed into the path template
+              description: "Billing system invoice identifier."
+            includeLineItems:
+              type: boolean
+              in: query                              # routed into the query string
+              description: "If true, embed the invoice's line items in the response."
+        http:
+          method: GET
+          path: "/v1/invoices/{invoiceId}"
+          # GET has no body — no http.body block
+          response:
+            select:                                    # reduce the upstream JSON to just what the tool needs
+              invoiceId: "{id}"
+              status: "{status}"
+              customerName: "{customer.name}"            # dot-path reaches into a nested response field
+              total: "{totals.grandTotal}"
+              notes: "{truncate(notes, 500)}"             # truncate a long text field to 500 chars
+
+      - name: createInvoice
+        description: "Create a new draft invoice for a customer."
+        parameters:
+          type: object
+          required: [customerId, lineItems]
+          properties:
+            customerId:
+              type: string
+              description: "Customer to bill."
+            currency:
+              type: string
+              description: "ISO-4217 currency code."
+              default: "USD"
+            lineItems:
+              type: array
+              description: "One or more line items for the invoice."
+              items:
+                type: object
+                required: [description, amountCents]
+                properties:
+                  description: { type: string }
+                  amountCents: { type: integer, minimum: 0 }
+        http:
+          method: POST
+          path: "/v1/invoices"
+          body:                            # literal JSON template of exactly what to POST
+            customerId: "{customerId}"      # "{name}" -> substituted with that parameter's runtime value
+            currency: "{currency}"
+            items: "{lineItems}"             # upstream field is "items"; our parameter is "lineItems" — renaming is fine
+            source: "mcp-proxy"              # not of the form "{...}" -> sent through as a literal string
+          response:
+            select:
+              invoiceId: "{id}"
+              status: "{status}"
+
+  - name: orders
+    upstream:
+      base_url: "https://orders.internal.example.com"
+      auth:
+        type: header
+        header: X-API-Key
+        env: ORDERS_API_KEY
+    tools:
+      - name: listOrders
+        description: "List orders for a customer, optionally filtered by status."
+        parameters:
+          type: object
+          required: [customerId]
+          properties:
+            customerId: { type: string, in: path, description: "Customer identifier." }
+            status:     { type: string, in: query, description: "Filter by order status (e.g. pending, shipped, cancelled)." }
+        http:
+          method: GET
+          path: "/v2/customers/{customerId}/orders"
+          response:
+            select:
+              orderIds: "{orders[].id}"             # "key[]" maps a sub-path over every element of the "orders" array
+              orderTotals: "{orders[].total}"         # another single-field extraction over the same array
+              promoCodes: "{appliedPromoCodes[]}"      # bare "key[]" with nothing after it -> the whole array, unchanged
+
+# Other supported auth shapes:
+#   auth: { type: query, query_param: api_key, env: SEARCH_API_KEY }
+#   auth: { type: none }
