@@ -21,7 +21,7 @@ import (
 // "token missing expiration".
 func NewStaticBearerVerifier(token string) auth.TokenVerifier {
 	expected := []byte(token)
-	return func(ctx context.Context, presented string, req *http.Request) (*auth.TokenInfo, error) {
+	return func(_ context.Context, presented string, _ *http.Request) (*auth.TokenInfo, error) {
 		if subtle.ConstantTimeCompare([]byte(presented), expected) != 1 {
 			return nil, auth.ErrInvalidToken
 		}

@@ -16,7 +16,7 @@ func validConfig() *Config {
 						Name:        "getInvoice",
 						Description: "Fetch an invoice.",
 						Parameters: map[string]any{
-							"type": "object",
+							"type":     "object",
 							"required": []any{"invoiceId"},
 							"properties": map[string]any{
 								"invoiceId": map[string]any{"type": "string", "in": "path", "description": "id"},

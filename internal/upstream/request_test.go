@@ -262,4 +262,3 @@ func TestBuildRequestAgainstRealServerURLShape(t *testing.T) {
 		t.Errorf("url = %q, want %q", req.URL.String(), srv.URL+"/x")
 	}
 }
-

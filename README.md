@@ -1,8 +1,10 @@
 # mcp-proxy
 
-Add MCP support to any REST API.
-We spent the last decades building REST APIs but to add MCP support shouldn't require reimplementing business logic.
-Instead `mcp-proxy` adds MCP tools for your REST endpoints without changes to your API.
+Add MCP support to any REST API — no code changes required.
+
+We've spent decades building REST APIs. Adding MCP support shouldn't mean
+reimplementing your business logic. `mcp-proxy` exposes your existing REST
+endpoints as MCP tools automatically, with zero changes to your API.
 
 ## How It Works
 

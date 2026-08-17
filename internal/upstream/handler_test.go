@@ -76,7 +76,7 @@ func TestNewToolHandlerHappyPathWithResponseSelect(t *testing.T) {
 
 func TestNewToolHandlerMissingRequiredArgNeverCallsUpstream(t *testing.T) {
 	called := false
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
 		called = true
 	}))
 	defer srv.Close()
@@ -105,7 +105,7 @@ func TestNewToolHandlerMissingRequiredArgNeverCallsUpstream(t *testing.T) {
 }
 
 func TestNewToolHandlerUpstreamTimeout(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		time.Sleep(50 * time.Millisecond)
 		w.WriteHeader(http.StatusOK)
 	}))
@@ -131,7 +131,7 @@ func TestNewToolHandlerUpstreamTimeout(t *testing.T) {
 }
 
 func TestNewToolHandlerUpstream500(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		_, _ = w.Write([]byte("boom"))
 	}))

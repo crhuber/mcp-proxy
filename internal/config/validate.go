@@ -36,11 +36,12 @@ func Validate(cfg *Config) error {
 			epPath = fmt.Sprintf("%s (%s)", epPath, ep.Name)
 		}
 
-		if ep.Name == "" {
+		switch {
+		case ep.Name == "":
 			errs = append(errs, ValidationError{Path: epPath, Msg: "name is required"})
-		} else if endpointNames[ep.Name] {
+		case endpointNames[ep.Name]:
 			errs = append(errs, ValidationError{Path: epPath, Msg: fmt.Sprintf("duplicate endpoint name %q", ep.Name)})
-		} else {
+		default:
 			endpointNames[ep.Name] = true
 		}
 
@@ -67,11 +68,12 @@ func Validate(cfg *Config) error {
 				toolPath = fmt.Sprintf("%s (%s)", toolPath, tool.Name)
 			}
 
-			if tool.Name == "" {
+			switch {
+			case tool.Name == "":
 				errs = append(errs, ValidationError{Path: toolPath, Msg: "name is required"})
-			} else if toolNamesInEndpoint[tool.Name] {
+			case toolNamesInEndpoint[tool.Name]:
 				errs = append(errs, ValidationError{Path: toolPath, Msg: fmt.Sprintf("duplicate tool name %q within upstream %q", tool.Name, ep.Name)})
-			} else {
+			default:
 				toolNamesInEndpoint[tool.Name] = true
 			}
 

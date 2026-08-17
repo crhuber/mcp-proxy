@@ -7,11 +7,11 @@ import (
 
 func TestDeriveParams(t *testing.T) {
 	schema := map[string]any{
-		"type": "object",
+		"type":     "object",
 		"required": []any{"invoiceId"},
 		"properties": map[string]any{
-			"invoiceId": map[string]any{"type": "string", "in": "path"},
-			"status":    map[string]any{"type": "string", "in": "query"},
+			"invoiceId":  map[string]any{"type": "string", "in": "path"},
+			"status":     map[string]any{"type": "string", "in": "query"},
 			"customerId": map[string]any{"type": "string"}, // untagged -> not routed
 		},
 	}

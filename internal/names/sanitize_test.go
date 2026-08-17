@@ -4,11 +4,11 @@ import "testing"
 
 func TestDeriveToolName(t *testing.T) {
 	cases := []struct {
-		name       string
-		upstream   string
-		tool       string
-		want       string
-		wantErr    bool
+		name     string
+		upstream string
+		tool     string
+		want     string
+		wantErr  bool
 	}{
 		{name: "simple", upstream: "billing", tool: "getInvoice", want: "billing_getInvoice"},
 		{name: "sanitizes special chars", upstream: "my-api", tool: "do thing!", want: "my-api_do_thing_"},
@@ -16,7 +16,7 @@ func TestDeriveToolName(t *testing.T) {
 		{
 			name:     "too long",
 			upstream: "upstream",
-			tool: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			tool:     "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 			wantErr:  true,
 		},
 	}

@@ -133,7 +133,7 @@ func TestIntegrationGetWithResponseSelectAndArrayPaths(t *testing.T) {
 					Method: "GET",
 					Path:   "/v2/customers/{customerId}/orders",
 					Response: &config.ResponseConfig{Select: map[string]any{
-						"orderIds":     "{orders[].id}",
+						"orderIds":    "{orders[].id}",
 						"orderTotals": "{orders[].total}",
 						"promoCodes":  "{appliedPromoCodes[]}",
 					}},
@@ -258,7 +258,7 @@ func TestIntegrationPostWithHTTPRequestBodyRenamingAndStaticLiteral(t *testing.T
 
 func TestIntegrationMissingRequiredArgNeverCallsUpstream(t *testing.T) {
 	called := false
-	upstreamSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstreamSrv := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, _ *http.Request) {
 		called = true
 	}))
 	defer upstreamSrv.Close()
@@ -306,7 +306,7 @@ func TestIntegrationMissingRequiredArgNeverCallsUpstream(t *testing.T) {
 }
 
 func TestIntegrationUpstream404NeverShapedByResponseSelect(t *testing.T) {
-	upstreamSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstreamSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		_, _ = w.Write([]byte(`{"error":"invoice not found","id":"missing"}`))
 	}))
@@ -439,7 +439,7 @@ func TestIntegrationAuthAttachmentMatrix(t *testing.T) {
 }
 
 func TestIntegrationProxyBearerAuth(t *testing.T) {
-	upstreamSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	upstreamSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"ok":true}`))
 	}))
@@ -487,12 +487,12 @@ func TestIntegrationProxyBearerAuth(t *testing.T) {
 }
 
 func TestIntegrationMultiUpstreamNoCrossContamination(t *testing.T) {
-	svcA := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	svcA := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"from":"A"}`))
 	}))
 	defer svcA.Close()
-	svcB := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	svcB := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_, _ = w.Write([]byte(`{"from":"B"}`))
 	}))

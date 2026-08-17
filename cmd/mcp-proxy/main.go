@@ -72,7 +72,7 @@ func main() {
 	}
 }
 
-func run(ctx context.Context, cmd *cli.Command) error {
+func run(_ context.Context, cmd *cli.Command) error {
 	logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: parseLogLevel(cmd.String("log-level"))}))
 
 	authMode := cmd.String("auth-mode")
