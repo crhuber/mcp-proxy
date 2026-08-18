@@ -221,7 +221,7 @@ The `http` object controls what how the HTTP request upstream is made. The usual
           path: "/price/XAU"
 ```
 
-For `POST` and `PUT` operations, a JSON request body can also be sent by adding the `body`
+A JSON request body can also be sent on any HTTP method by adding the `body`
 
 ```yaml
         http:

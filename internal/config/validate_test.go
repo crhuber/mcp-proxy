@@ -81,11 +81,20 @@ func TestValidateRejectsPathParamNotInPath(t *testing.T) {
 	}
 }
 
-func TestValidateRejectsHTTPRequestBodyOnGet(t *testing.T) {
+func TestValidateAllowsHTTPRequestBodyOnGet(t *testing.T) {
 	cfg := validConfig()
 	cfg.Endpoints[0].Tools[0].HTTP.Body = map[string]any{"x": "literal"}
-	if err := Validate(cfg); err == nil {
-		t.Fatal("expected error for httpRequestBody on GET")
+	if err := Validate(cfg); err != nil {
+		t.Fatalf("unexpected error for httpRequestBody on GET: %v", err)
+	}
+}
+
+func TestValidateAllowsHTTPRequestBodyOnDelete(t *testing.T) {
+	cfg := validConfig()
+	cfg.Endpoints[0].Tools[0].HTTP.Method = "DELETE"
+	cfg.Endpoints[0].Tools[0].HTTP.Body = map[string]any{"x": "literal"}
+	if err := Validate(cfg); err != nil {
+		t.Fatalf("unexpected error for httpRequestBody on DELETE: %v", err)
 	}
 }
 
