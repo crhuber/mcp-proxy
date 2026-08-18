@@ -12,7 +12,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 // defaultMaxResponseBytes bounds how much of an upstream response body the

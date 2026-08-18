@@ -11,7 +11,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 func testSpec(response respmap.Template, redactor *Redactor) *ToolSpec {

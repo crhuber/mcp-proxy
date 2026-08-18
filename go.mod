@@ -1,4 +1,4 @@
-module mcp-proxy
+module github.com/crhuber/mcp-proxy
 
 go 1.25.5
 

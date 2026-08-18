@@ -6,8 +6,8 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/toolgen"
-	"mcp-proxy/internal/upstream"
+	"github.com/crhuber/mcp-proxy/internal/toolgen"
+	"github.com/crhuber/mcp-proxy/internal/upstream"
 )
 
 func genTool(name string) toolgen.GeneratedTool {

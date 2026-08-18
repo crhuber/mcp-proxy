@@ -9,9 +9,9 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/bodytmpl"
-	"mcp-proxy/internal/config"
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/bodytmpl"
+	"github.com/crhuber/mcp-proxy/internal/config"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 // ParamDef describes one path/query/header-routed argument.

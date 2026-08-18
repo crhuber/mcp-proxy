@@ -9,8 +9,8 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/toolgen"
-	"mcp-proxy/internal/upstream"
+	"github.com/crhuber/mcp-proxy/internal/toolgen"
+	"github.com/crhuber/mcp-proxy/internal/upstream"
 )
 
 // Build constructs an *mcp.Server with every generated tool registered. Each

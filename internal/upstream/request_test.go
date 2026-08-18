@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"mcp-proxy/internal/bodytmpl"
+	"github.com/crhuber/mcp-proxy/internal/bodytmpl"
 )
 
 func testUpstream(auth AuthConfig, redactor *Redactor) *Upstream {

@@ -12,11 +12,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/config"
-	"mcp-proxy/internal/proxyauth"
-	"mcp-proxy/internal/server"
-	"mcp-proxy/internal/toolgen"
-	"mcp-proxy/internal/upstream"
+	"github.com/crhuber/mcp-proxy/internal/config"
+	"github.com/crhuber/mcp-proxy/internal/proxyauth"
+	"github.com/crhuber/mcp-proxy/internal/server"
+	"github.com/crhuber/mcp-proxy/internal/toolgen"
+	"github.com/crhuber/mcp-proxy/internal/upstream"
 )
 
 // buildProxy runs the same pipeline as main.run() (config validate ->

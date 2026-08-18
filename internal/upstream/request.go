@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"mcp-proxy/internal/bodytmpl"
+	"github.com/crhuber/mcp-proxy/internal/bodytmpl"
 )
 
 // buildRequest constructs the outgoing HTTP request for a tool call. It

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"mcp-proxy/internal/bodytmpl"
-	"mcp-proxy/internal/names"
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/bodytmpl"
+	"github.com/crhuber/mcp-proxy/internal/names"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 var pathTokenPattern = regexp.MustCompile(`\{([A-Za-z_][A-Za-z0-9_]*)\}`)

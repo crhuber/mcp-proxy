@@ -10,7 +10,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 func callToolRequest(t *testing.T, args map[string]any) *mcp.CallToolRequest {

@@ -17,11 +17,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/urfave/cli/v3"
 
-	"mcp-proxy/internal/config"
-	"mcp-proxy/internal/proxyauth"
-	"mcp-proxy/internal/server"
-	"mcp-proxy/internal/toolgen"
-	"mcp-proxy/internal/upstream"
+	"github.com/crhuber/mcp-proxy/internal/config"
+	"github.com/crhuber/mcp-proxy/internal/proxyauth"
+	"github.com/crhuber/mcp-proxy/internal/server"
+	"github.com/crhuber/mcp-proxy/internal/toolgen"
+	"github.com/crhuber/mcp-proxy/internal/upstream"
 )
 
 // version is overridable at build time via -ldflags "-X main.version=...".

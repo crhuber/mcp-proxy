@@ -6,10 +6,10 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
-	"mcp-proxy/internal/bodytmpl"
-	"mcp-proxy/internal/config"
-	"mcp-proxy/internal/names"
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/bodytmpl"
+	"github.com/crhuber/mcp-proxy/internal/config"
+	"github.com/crhuber/mcp-proxy/internal/names"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 // defaultUpstreamTimeout is used when an upstream's config omits `timeout`.

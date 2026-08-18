@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"mcp-proxy/internal/bodytmpl"
-	"mcp-proxy/internal/respmap"
+	"github.com/crhuber/mcp-proxy/internal/bodytmpl"
+	"github.com/crhuber/mcp-proxy/internal/respmap"
 )
 
 // ParamLocation is where a routed argument is placed on the outgoing HTTP
