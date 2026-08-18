@@ -259,6 +259,24 @@ Suppose your tool has properties `customerId` and `currency` but you want to ref
             currency: "{currency}"
 ```
 
+Sometimes you want to want to use parameters as query strings on the upstream request. To do this use `in` on the properties.
+For example the following config would result in a `HTTP GET` to `/v1/invoices?customerId={customerId}&currency={currency}`
+
+```
+          properties:
+            customerId:
+              type: string
+              in: query
+              description: "Customer to bill."
+            currency:
+              type: string
+              in: query
+              description: "ISO-4217 currency code."
+        http:
+          method: POST
+          path: "/v1/invoices"
+```
+
 This also works in paths
 
 ```yaml
