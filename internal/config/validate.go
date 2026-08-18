@@ -215,9 +215,6 @@ func validateTool(path, upstreamName string, tool ToolConfig) (ValidationErrors,
 	// http.body rules.
 	var bodyUsed map[string]bool
 	if tool.HTTP.Body != nil {
-		if tool.HTTP.Method == "GET" || tool.HTTP.Method == "DELETE" {
-			errs = append(errs, ValidationError{Path: path + ".http.body", Msg: fmt.Sprintf("http.body is not allowed on %s tools", tool.HTTP.Method)})
-		}
 		_, used, err := bodytmpl.Compile(tool.HTTP.Body, knownNames)
 		if err != nil {
 			errs = append(errs, ValidationError{Path: path + ".http.body", Msg: err.Error()})
