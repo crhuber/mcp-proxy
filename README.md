@@ -11,6 +11,16 @@ endpoints as MCP tools automatically, with zero changes to your API.
 `mcp-proxy` loads a YAML config describing one or more upstream REST APIs, dynamically registers MCP tools for them, and translates each
 tool call into an HTTP request against the real upstream API and back.
 
+```mermaid
+flowchart LR
+    A[MCP Client] -- MCP tool call --> B[mcp-proxy]
+    B -- HTTP request --> C[REST API]
+    C -- HTTP response --> B
+    B -- MCP tool result --> A
+```
+
+`mcp-proxy` can be deployed in a sidecar pattern in Kubernetes or infront of any API service that doesnt provide a native MCP server.
+
 ## Quick Start
 
 Say for example, you already have an REST API server at https://api.gold-api.com but you want to be able to query it via MCP.
