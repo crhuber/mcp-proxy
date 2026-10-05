@@ -219,3 +219,19 @@ func TestValidateRejectsArrayTypedPathParam(t *testing.T) {
 		t.Fatal("expected error for array-typed in:path property")
 	}
 }
+
+func TestValidateRejectsNonHTTPBaseURLScheme(t *testing.T) {
+	cfg := validConfig()
+	cfg.Endpoints[0].Upstream.BaseURL = "ftp://api.example.com"
+	if err := Validate(cfg); err == nil {
+		t.Fatal("expected error for non-http(s) base_url scheme")
+	}
+}
+
+func TestValidateRejectsOptionalPathParam(t *testing.T) {
+	cfg := validConfig()
+	delete(cfg.Endpoints[0].Tools[0].Parameters, "required")
+	if err := Validate(cfg); err == nil {
+		t.Fatal("expected error for in:path parameter missing from required")
+	}
+}

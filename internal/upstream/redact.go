@@ -1,6 +1,9 @@
 package upstream
 
-import "strings"
+import (
+	"net/url"
+	"strings"
+)
 
 // Redactor scrubs known secret values out of any string before it leaves
 // the process (tool-error messages, structured error fields, log lines). A
@@ -13,12 +16,18 @@ type Redactor struct {
 
 // NewRedactor builds a Redactor from the given secrets. Empty strings are
 // ignored so an unset/none-auth upstream never accidentally causes every
-// empty string to be "redacted".
+// empty string to be "redacted". Each secret's URL-encoded forms are also
+// registered, since a query-auth secret goes over the wire percent-encoded
+// and an upstream may echo it back that way (e.g. in a Location header).
 func NewRedactor(secrets ...string) *Redactor {
 	r := &Redactor{}
+	seen := map[string]bool{}
 	for _, s := range secrets {
-		if s != "" {
-			r.secrets = append(r.secrets, s)
+		for _, form := range []string{s, url.QueryEscape(s), url.PathEscape(s)} {
+			if form != "" && !seen[form] {
+				seen[form] = true
+				r.secrets = append(r.secrets, form)
+			}
 		}
 	}
 	return r

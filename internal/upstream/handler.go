@@ -52,13 +52,14 @@ func NewToolHandler(spec *ToolSpec) mcp.ToolHandler {
 
 // decodeArguments unmarshals the raw JSON-RPC arguments into a generic map.
 // Absent arguments (a tool called with no parameters at all) decode to an
-// empty map rather than an error.
+// empty map rather than an error. Numbers decode as json.Number so large
+// integer IDs reach the upstream exactly.
 func decodeArguments(raw json.RawMessage) (map[string]any, error) {
 	if len(raw) == 0 {
 		return map[string]any{}, nil
 	}
 	var args map[string]any
-	if err := json.Unmarshal(raw, &args); err != nil {
+	if err := decodeJSONNumbers(raw, &args); err != nil {
 		return nil, err
 	}
 	return args, nil

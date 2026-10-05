@@ -37,7 +37,10 @@ type funcCall struct {
 // httpRequestBody's "{paramName}". Examples: {id}, {customer.name},
 // {orders[].id} (single-field extraction per element), {tips[]} (bare array
 // passthrough), {truncate(notes, 500)} (a function call).
-var pathPattern = regexp.MustCompile(`^\{((?:[A-Za-z_][A-Za-z0-9_]*(?:\[\])?)(?:\.[A-Za-z_][A-Za-z0-9_]*(?:\[\])?)*)\}$`)
+const pathExpr = `(?:[A-Za-z_][A-Za-z0-9_]*(?:\[\])?)(?:\.[A-Za-z_][A-Za-z0-9_]*(?:\[\])?)*`
+
+var pathPattern = regexp.MustCompile(`^\{(` + pathExpr + `)\}$`)
+var bareRefPattern = regexp.MustCompile(`^` + pathExpr + `$`)
 var funcPattern = regexp.MustCompile(`^\{([A-Za-z_][A-Za-z0-9_]*)\(([^()]*)\)\}$`)
 var escapedLiteral = regexp.MustCompile(`^\{\{(.*)\}\}$`)
 
@@ -95,6 +98,9 @@ func compileValue(raw any) (Template, error) {
 			case "truncate":
 				if len(args) != 2 {
 					return nil, fmt.Errorf("truncate expects (path, maxLen), got %d args in %q", len(args), v)
+				}
+				if !bareRefPattern.MatchString(args[0]) {
+					return nil, fmt.Errorf("truncate's first arg must be a response path (e.g. notes or orders[].description) in %q", v)
 				}
 				n, err := strconv.Atoi(args[1])
 				if err != nil || n <= 0 {

@@ -1,11 +1,13 @@
 package upstream
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"mime"
 	"net"
 	"net/http"
 	"strings"
@@ -106,7 +108,7 @@ func mapUpstreamResponse(spec *ToolSpec, resp *http.Response) (*mcp.CallToolResu
 	if spec.Response != nil {
 		var parsed any
 		if len(body) > 0 {
-			if err := json.Unmarshal(body, &parsed); err != nil {
+			if err := decodeJSONNumbers(body, &parsed); err != nil {
 				return toolError(spec, "response_unparseable",
 					fmt.Sprintf("upstream %q returned a body that could not be parsed as JSON for response field-selection: %v", spec.Upstream.Name, err)), nil
 			}
@@ -162,12 +164,37 @@ func appendTruncationNote(text string, truncated bool, shownBytes int) string {
 	return text + fmt.Sprintf("\n\n[...truncated: response exceeded %d bytes, showing first %d...]", defaultMaxResponseBytes, shownBytes)
 }
 
+// decodeJSONNumbers is json.Unmarshal with UseNumber, so numbers survive a
+// decode/re-encode round trip exactly (a 64-bit ID isn't rounded via
+// float64). Like Unmarshal, trailing data after the value is an error.
+func decodeJSONNumbers(data []byte, v any) error {
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.UseNumber()
+	if err := dec.Decode(v); err != nil {
+		return err
+	}
+	if err := dec.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
+		return errors.New("invalid character after top-level value")
+	}
+	return nil
+}
+
+// mediaType returns ct's lowercased media type without parameters; media
+// types are case-insensitive.
+func mediaType(ct string) string {
+	if mt, _, err := mime.ParseMediaType(ct); err == nil {
+		return mt
+	}
+	return strings.ToLower(strings.TrimSpace(ct))
+}
+
 func isJSONContentType(ct string) bool {
-	return strings.Contains(ct, "json")
+	return strings.Contains(mediaType(ct), "json")
 }
 
 func isTextContentType(ct string) bool {
-	return ct == "" || strings.HasPrefix(ct, "text/")
+	mt := mediaType(ct)
+	return mt == "" || strings.HasPrefix(mt, "text/")
 }
 
 // readCapped reads at most max bytes from r (plus one byte to detect

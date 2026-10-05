@@ -1,7 +1,10 @@
 package config
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -16,8 +19,12 @@ func Load(path string) (*Config, error) {
 		return nil, fmt.Errorf("reading config file %q: %w", path, err)
 	}
 
+	// KnownFields makes a typo'd key (e.g. "selec" instead of "select") a
+	// startup error instead of a silently-ignored field.
 	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	dec.KnownFields(true)
+	if err := dec.Decode(&cfg); err != nil && !errors.Is(err, io.EOF) {
 		return nil, fmt.Errorf("parsing config YAML: %w", err)
 	}
 

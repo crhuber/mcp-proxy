@@ -51,6 +51,8 @@ func Validate(cfg *Config) error {
 			errs = append(errs, ValidationError{Path: upPath, Msg: "base_url is required"})
 		} else if u, err := url.Parse(ep.Upstream.BaseURL); err != nil || u.Scheme == "" || u.Host == "" {
 			errs = append(errs, ValidationError{Path: upPath, Msg: fmt.Sprintf("base_url %q must be an absolute URL with scheme and host", ep.Upstream.BaseURL)})
+		} else if s := strings.ToLower(u.Scheme); s != "http" && s != "https" {
+			errs = append(errs, ValidationError{Path: upPath, Msg: fmt.Sprintf("base_url %q must use the http or https scheme", ep.Upstream.BaseURL)})
 		}
 
 		if ep.Upstream.Timeout != "" {
@@ -206,9 +208,25 @@ func validateTool(path, upstreamName string, tool ToolConfig) (ValidationErrors,
 			errs = append(errs, ValidationError{Path: path, Msg: fmt.Sprintf("path placeholder {%s} has no matching parameter tagged in:path", token)})
 		}
 	}
+	required := map[string]bool{}
+	if reqList, ok := schema["required"].([]any); ok {
+		for _, r := range reqList {
+			if s, ok := r.(string); ok {
+				required[s] = true
+			}
+		}
+	}
 	for name, in := range routedIn {
-		if in == "path" && !pathTokens[name] {
+		if in != "path" {
+			continue
+		}
+		if !pathTokens[name] {
 			errs = append(errs, ValidationError{Path: path, Msg: fmt.Sprintf("parameter %q is tagged in:path but does not appear as {%s} in path %q", name, name, tool.HTTP.Path)})
+		}
+		// An omitted path parameter would leave an unresolved placeholder,
+		// so the advertised schema must not allow omitting it.
+		if !required[name] {
+			errs = append(errs, ValidationError{Path: path, Msg: fmt.Sprintf("parameter %q is tagged in:path and must be listed in \"required\"", name)})
 		}
 	}
 

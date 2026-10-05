@@ -34,3 +34,13 @@ func TestNilRedactorIsNoOp(t *testing.T) {
 		t.Errorf("nil Redactor should pass text through unchanged, got %q", got)
 	}
 }
+
+func TestRedactorScrubsURLEncodedSecretForms(t *testing.T) {
+	r := NewRedactor("a+b c")
+	for _, encoded := range []string{"a%2Bb+c", "a+b%20c"} {
+		got := r.Redact("Location: https://x.example.com/?key=" + encoded)
+		if strings.Contains(got, encoded) {
+			t.Errorf("encoded secret %q leaked: %q", encoded, got)
+		}
+	}
+}
