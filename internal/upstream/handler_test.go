@@ -66,7 +66,7 @@ func TestNewToolHandlerHappyPathWithResponseSelect(t *testing.T) {
 		t.Fatalf("expected success, got error result: %+v", result.StructuredContent)
 	}
 	mapped := result.StructuredContent.(map[string]any)
-	if mapped["invoiceId"] != "inv_1" || mapped["total"] != float64(42) {
+	if mapped["invoiceId"] != "inv_1" || mapped["total"] != json.Number("42") {
 		t.Errorf("unexpected mapped result: %v", mapped)
 	}
 	if _, present := mapped["internal"]; present {
@@ -224,5 +224,19 @@ func TestNewToolHandlerUpstream500(t *testing.T) {
 	eb := result.StructuredContent.(errBody)
 	if eb.Error != "upstream_error_status" || eb.Status != 500 {
 		t.Errorf("unexpected errBody: %+v", eb)
+	}
+}
+
+func TestDecodeArgumentsPreservesLargeIntegers(t *testing.T) {
+	args, err := decodeArguments(json.RawMessage(`{"id":9007199254740993}`))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	s, err := stringifyScalar(args["id"])
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if s != "9007199254740993" {
+		t.Errorf("large integer argument rounded: %s", s)
 	}
 }

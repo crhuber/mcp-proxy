@@ -172,7 +172,6 @@ Auth types supported are:
       auth:
         type: header
         header: X-API-Key
-        type: "none"
         env: ORDERS_API_KEY               # secret ALWAYS comes from this env var, never literal in file
 ```
 

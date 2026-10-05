@@ -73,3 +73,15 @@ func TestLoadFailsOnMissingFile(t *testing.T) {
 		t.Fatal("expected error for missing config file")
 	}
 }
+
+func TestLoadRejectsUnknownField(t *testing.T) {
+	t.Setenv("TEST_BILLING_BASE_URL", "https://billing.example.com")
+	t.Setenv("TEST_BILLING_TOKEN", "secret-token")
+
+	typo := sampleYAML + `          response:
+            selec: { id: "{id}" }
+`
+	if _, err := Load(writeTempConfig(t, typo)); err == nil {
+		t.Fatal("expected error for unknown config key \"selec\"")
+	}
+}

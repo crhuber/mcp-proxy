@@ -166,6 +166,8 @@ func stringifyScalar(v any) (string, error) {
 		return t, nil
 	case bool:
 		return strconv.FormatBool(t), nil
+	case json.Number:
+		return t.String(), nil
 	case float64:
 		if t == float64(int64(t)) {
 			return strconv.FormatInt(int64(t), 10), nil

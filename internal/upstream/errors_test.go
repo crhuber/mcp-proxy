@@ -2,6 +2,7 @@ package upstream
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"io"
 	"net"
@@ -90,7 +91,7 @@ func TestMapUpstreamResponseSuccessWithResponseSelect(t *testing.T) {
 	if mapped["invoiceId"] != "inv_1" {
 		t.Errorf("invoiceId = %v", mapped["invoiceId"])
 	}
-	if mapped["total"] != float64(42) {
+	if mapped["total"] != json.Number("42") {
 		t.Errorf("total = %v", mapped["total"])
 	}
 	if mapped["missing"] != nil {
@@ -275,5 +276,41 @@ func TestMapUpstreamResponseEmptyBodyWithSelectResolvesToNulls(t *testing.T) {
 	mapped := result.StructuredContent.(map[string]any)
 	if mapped["x"] != nil {
 		t.Errorf("expected nil for unresolved path against an empty response, got %v", mapped["x"])
+	}
+}
+
+func TestMapUpstreamResponseSelectPreservesLargeIntegers(t *testing.T) {
+	tmpl, err := respmap.Compile(map[string]any{"id": "{id}"})
+	if err != nil {
+		t.Fatalf("compile: %v", err)
+	}
+	result, err := mapUpstreamResponse(testSpec(tmpl, nil), fakeResponse(200,
+		`{"id":9007199254740993}`, map[string]string{"Content-Type": "application/json"}))
+	if err != nil || result.IsError {
+		t.Fatalf("unexpected failure: %v %+v", err, result)
+	}
+	text := result.Content[0].(*mcp.TextContent).Text
+	if text != `{"id":9007199254740993}` {
+		t.Errorf("large integer not preserved exactly: %s", text)
+	}
+}
+
+func TestMapUpstreamResponseSelectRejectsTrailingData(t *testing.T) {
+	tmpl, _ := respmap.Compile(map[string]any{"id": "{id}"})
+	result, _ := mapUpstreamResponse(testSpec(tmpl, nil), fakeResponse(200,
+		`{"id":1} garbage`, map[string]string{"Content-Type": "application/json"}))
+	if !result.IsError {
+		t.Fatal("expected response_unparseable for trailing data")
+	}
+}
+
+func TestMapSuccessRawContentTypeIsCaseInsensitive(t *testing.T) {
+	result, err := mapUpstreamResponse(testSpec(nil, nil), fakeResponse(200,
+		`{"ok":true}`, map[string]string{"Content-Type": "Application/JSON; charset=UTF-8"}))
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.StructuredContent == nil {
+		t.Errorf("expected mixed-case JSON content type to yield structured content, got %+v", result.Content)
 	}
 }

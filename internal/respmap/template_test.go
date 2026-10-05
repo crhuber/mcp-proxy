@@ -157,3 +157,11 @@ func TestBareArrayRootTemplate(t *testing.T) {
 		t.Fatalf("got %#v, want %#v", got, want)
 	}
 }
+
+func TestCompileRejectsMalformedTruncatePath(t *testing.T) {
+	for _, expr := range []string{"{truncate(, 5)}", "{truncate(a..b, 5)}", "{truncate(1abc, 5)}"} {
+		if _, err := Compile(map[string]any{"x": expr}); err == nil {
+			t.Errorf("expected compile error for %q", expr)
+		}
+	}
+}
